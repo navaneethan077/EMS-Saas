@@ -33,11 +33,34 @@ export default function SubscriptionsPage() {
   }, [data, search, statusFilter, planFilter]);
 
   const handleActionConfirm = (action: string, subId: string, payload?: any) => {
+    if (action === "create") {
+      const newSubPlan = plans.find((p) => p.id === payload.planId);
+      const newSub: Subscription = {
+        id: `sub_${Date.now()}`,
+        companyId: `c_${Date.now()}`,
+        company: payload.company,
+        planId: payload.planId,
+        planName: (newSubPlan?.name as PlanName) || "Basic",
+        price: newSubPlan?.price || 0,
+        currency: "USD",
+        billingCycle: "monthly",
+        status: "active",
+        startDate: new Date().toISOString().split("T")[0],
+        endDate: payload.date,
+        nextBillingDate: payload.date,
+        isTrial: false,
+        paymentStatus: "paid",
+        autoRenew: true,
+      };
+      setData((prev) => [newSub, ...prev]);
+      return;
+    }
+
     setData((prev) =>
       prev.map((s) => {
         if (s.id !== subId) return s;
 
-        const updated = { ...s };
+        const updated: Subscription = { ...s };
 
         switch (action) {
           case "assign_plan":
@@ -127,7 +150,10 @@ export default function SubscriptionsPage() {
           </div>
 
           {/* Create button AFTER */}
-          <Button className="w-full sm:w-auto h-10 shadow-sm">
+          <Button 
+            className="w-full sm:w-auto h-10 shadow-sm"
+            onClick={() => setActiveAction({ action: "create", sub: {} as Subscription })}
+          >
             <Plus className="w-4 h-4 mr-2" />
             Create Subscription
           </Button>

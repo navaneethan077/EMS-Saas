@@ -14,7 +14,9 @@ import {
   Zap,
   X,
   ChevronRight,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 
 const navItems = [
   { label: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
@@ -33,6 +35,7 @@ interface SidebarProps {
 
 export default function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
+  const { logout } = useAuth();
 
   return (
     <>
@@ -105,16 +108,24 @@ export default function Sidebar({ open, onClose }: SidebarProps) {
         </nav>
 
         {/* Footer */}
-        <div className="p-4 border-t border-sidebar-border flex-shrink-0">
-          <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-sidebar-accent transition-colors cursor-pointer">
-            <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0">
+        <div className="p-4 border-t border-sidebar-border flex-shrink-0 space-y-2">
+          <div className="flex items-center gap-3 px-2 py-2 rounded-lg hover:bg-sidebar-accent transition-colors cursor-pointer group">
+            <div className="w-8 h-8 rounded-full bg-primary/20 border border-primary/30 flex items-center justify-center flex-shrink-0 group-hover:bg-primary/30 transition-colors">
               <span className="text-xs font-bold text-primary">SA</span>
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-xs font-semibold text-sidebar-foreground truncate">Super Admin</p>
-              <p className="text-[10px] text-sidebar-foreground/40 truncate">admin@ems.io</p>
+              <p className="text-[10px] text-sidebar-foreground/40 truncate">admin@ems.com</p>
             </div>
           </div>
+          
+          <button 
+            onClick={logout}
+            className="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sidebar-foreground/60 hover:text-red-500 hover:bg-red-500/5 transition-all duration-200 text-left"
+          >
+            <LogOut className="w-4 h-4 flex-shrink-0" />
+            <span className="text-xs font-medium">Log out</span>
+          </button>
         </div>
       </aside>
     </>

@@ -2,7 +2,7 @@
 
 import { useState, useMemo } from "react";
 import {
-  Building2, Search, Plus, Eye, CheckCircle, Ban, Filter, Grid, List, Pencil, Trash2, MoreHorizontal
+  Building2, Search, Plus, Eye, CheckCircle, Ban, Filter, Grid, List, Pencil, Trash2, MoreHorizontal, MoreVertical
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";

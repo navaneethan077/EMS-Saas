@@ -21,6 +21,7 @@ interface SubscriptionDialogsProps {
 export function SubscriptionDialogs({ activeAction, onClose, onConfirm }: SubscriptionDialogsProps) {
   const [selectedPlan, setSelectedPlan] = useState("");
   const [dateInput, setDateInput] = useState("");
+  const [companyName, setCompanyName] = useState("");
 
   useEffect(() => {
     if (activeAction) {
@@ -29,9 +30,15 @@ export function SubscriptionDialogs({ activeAction, onClose, onConfirm }: Subscr
       if (activeAction.action === "extend_trial") {
         setDateInput(activeAction.sub.trialEndDate || activeAction.sub.endDate);
       }
+      if (activeAction.action === "create") {
+        setSelectedPlan(plans[0].id);
+        setDateInput(new Date(new Date().setFullYear(new Date().getFullYear() + 1)).toISOString().split("T")[0]);
+        setCompanyName("");
+      }
     } else {
       setSelectedPlan("");
       setDateInput("");
+      setCompanyName("");
     }
   }, [activeAction]);
 
@@ -43,8 +50,12 @@ export function SubscriptionDialogs({ activeAction, onClose, onConfirm }: Subscr
     let payload: any = null;
     if (action === "assign_plan") payload = { planId: selectedPlan };
     if (action === "adjust_expiry" || action === "extend_trial") payload = { date: dateInput };
+    if (action === "create") {
+      if (!companyName) return;
+      payload = { company: companyName, planId: selectedPlan, date: dateInput };
+    }
     
-    onConfirm(action, sub.id, payload);
+    onConfirm(action, sub.id || "new", payload);
     onClose();
   };
 
@@ -53,6 +64,7 @@ export function SubscriptionDialogs({ activeAction, onClose, onConfirm }: Subscr
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle>
+            {action === "create" && "Create New Subscription"}
             {action === "assign_plan" && "Assign / Upgrade Plan"}
             {action === "extend_trial" && "Start / Extend Trial"}
             {action === "adjust_expiry" && "Adjust Expiry Date"}
@@ -62,14 +74,27 @@ export function SubscriptionDialogs({ activeAction, onClose, onConfirm }: Subscr
             {action === "cancel" && "Cancel Subscription"}
           </DialogTitle>
           <DialogDescription>
-            Managing subscription for <strong>{sub.company}</strong>.
+            {action === "create" 
+              ? "Fill in the details to onboard a new company subscription." 
+              : `Managing subscription for ${sub.company}.`}
           </DialogDescription>
         </DialogHeader>
 
         <div className="py-4 space-y-4">
-          {action === "assign_plan" && (
+          {action === "create" && (
             <div className="space-y-2">
-              <Label>Select New Plan</Label>
+              <Label>Company Name</Label>
+              <Input 
+                placeholder="e.g. Acme Corp" 
+                value={companyName} 
+                onChange={(e) => setCompanyName(e.target.value)} 
+              />
+            </div>
+          )}
+
+          {(action === "assign_plan" || action === "create") && (
+            <div className="space-y-2">
+              <Label>Select Plan</Label>
               <Select value={selectedPlan} onValueChange={setSelectedPlan}>
                 <SelectTrigger><SelectValue placeholder="Select plan" /></SelectTrigger>
                 <SelectContent>
@@ -81,9 +106,12 @@ export function SubscriptionDialogs({ activeAction, onClose, onConfirm }: Subscr
             </div>
           )}
 
-          {(action === "adjust_expiry" || action === "extend_trial") && (
+          {(action === "adjust_expiry" || action === "extend_trial" || action === "create") && (
             <div className="space-y-2">
-              <Label>{action === "extend_trial" ? "New Trial End Date" : "New Expiry Date"}</Label>
+              <Label>
+                {action === "extend_trial" ? "New Trial End Date" : 
+                 action === "create" ? "Initial Expiry Date" : "New Expiry Date"}
+              </Label>
               <Input type="date" value={dateInput} onChange={(e) => setDateInput(e.target.value)} />
             </div>
           )}

@@ -30,13 +30,13 @@ export interface Company {
   analyticsEnabled?: boolean;
 }
 
-// export type SubscriptionStatus =
-//   | "active"
-//   | "trial"
-//   | "expired"
-//   | "cancelled"
-//   | "past_due"
-//   | "suspended";
+export type SubscriptionStatus =
+  | "active"
+  | "trial"
+  | "expired"
+  | "cancelled"
+  | "past_due"
+  | "suspended";
 
 export interface Subscription {
   id: string;
