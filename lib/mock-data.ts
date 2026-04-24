@@ -1,0 +1,856 @@
+// ─── Types ────────────────────────────────────────────────────────────────────
+
+export type PlanName = "Free" | "Basic" | "Pro" | "Enterprise";
+export type CompanyStatus = "Active" | "Suspended" | "Pending";
+
+export type OrderStatus = "Paid" | "Pending" | "Failed";
+
+export interface Company {
+  id: string;
+  name: string;
+  logo: string;
+  plan: PlanName;
+  users: number;
+  status: CompanyStatus;
+  revenue: number;
+  joinedAt: string;
+  email: string;
+  country: string;
+  displayName?: string;
+  phone?: string;
+  adminName?: string;
+  adminEmail?: string;
+  adminPassword?: string;
+  billingCycle?: string;
+  isTrial?: boolean;
+  startDate?: string;
+  expiryDate?: string;
+  maxStorage?: number;
+  apiLimits?: number;
+  analyticsEnabled?: boolean;
+}
+
+// export type SubscriptionStatus =
+//   | "active"
+//   | "trial"
+//   | "expired"
+//   | "cancelled"
+//   | "past_due"
+//   | "suspended";
+
+export interface Subscription {
+  id: string;
+  companyId: string;
+  company: string; // Keeping for display
+  planId: string;
+  planName: PlanName;
+  price: number;
+  currency: string;
+  billingCycle: "monthly" | "yearly";
+  status: SubscriptionStatus;
+  startDate: string;
+  endDate: string;
+  nextBillingDate: string;
+  isTrial: boolean;
+  trialStartDate?: string;
+  trialEndDate?: string;
+  paymentStatus: "paid" | "pending" | "failed";
+  autoRenew: boolean;
+}
+
+export interface Order {
+  id: string;
+  companyId: string;
+  company: string;
+  plan: PlanName;
+  amount: number;
+  status: OrderStatus;
+  date: string;
+  invoice: string;
+}
+
+export interface Plan {
+  id: string;
+  name: PlanName;
+  price: number;
+  yearlyPrice: number;
+  description: string;
+  features: string[];
+  limits: { users: number; storage: string; support: string };
+  popular: boolean;
+  companies: number;
+}
+
+export interface RevenuePoint {
+  month: string;
+  mrr: number;
+  arr: number;
+  newCustomers: number;
+  churn: number;
+}
+
+// ─── Companies ────────────────────────────────────────────────────────────────
+
+export const companies: Company[] = [
+  {
+    id: "c1",
+    name: "Acme Corp",
+    displayName: "Acme Corporation Global",
+    logo: "AC",
+    plan: "Enterprise",
+    users: 248,
+    status: "Active",
+    revenue: 48000,
+    joinedAt: "2023-01-15",
+    email: "admin@acme.com",
+    phone: "+1 (555) 123-4567",
+    country: "US",
+    adminName: "Alice Smith",
+    adminEmail: "alice@acme.com",
+    billingCycle: "yearly",
+    isTrial: false,
+    startDate: "2023-01-15",
+    expiryDate: "",
+    maxStorage: 500,
+    apiLimits: 10000,
+    analyticsEnabled: true,
+  },
+  {
+    id: "c2",
+    name: "TechNova",
+    displayName: "TechNova Solutions",
+    logo: "TN",
+    plan: "Pro",
+    users: 82,
+    status: "Active",
+    revenue: 15600,
+    joinedAt: "2023-03-22",
+    email: "hello@technova.io",
+    phone: "+44 20 7123 4567",
+    country: "UK",
+    adminName: "Tom Jenkins",
+    adminEmail: "tom@technova.io",
+    billingCycle: "monthly",
+    isTrial: false,
+    startDate: "2023-03-22",
+    expiryDate: "",
+    maxStorage: 100,
+    apiLimits: 5000,
+    analyticsEnabled: true,
+  },
+  {
+    id: "c3",
+    name: "Spark Systems",
+    displayName: "Spark Systems LLC",
+    logo: "SS",
+    plan: "Basic",
+    users: 24,
+    status: "Active",
+    revenue: 3600,
+    joinedAt: "2023-06-10",
+    email: "contact@sparksys.com",
+    phone: "+1 (555) 987-6543",
+    country: "CA",
+    adminName: "Sarah Connor",
+    adminEmail: "sarah@sparksys.com",
+    billingCycle: "yearly",
+    isTrial: false,
+    startDate: "2023-06-10",
+    expiryDate: "",
+    maxStorage: 20,
+    apiLimits: 1000,
+    analyticsEnabled: false,
+  },
+  {
+    id: "c4",
+    name: "Vertex AI Labs",
+    displayName: "Vertex AI",
+    logo: "VA",
+    plan: "Enterprise",
+    users: 315,
+    status: "Active",
+    revenue: 72000,
+    joinedAt: "2022-11-05",
+    email: "ops@vertexai.com",
+    phone: "+1 (555) 555-0199",
+    country: "US",
+    adminName: "Victor Vance",
+    adminEmail: "victor@vertexai.com",
+    billingCycle: "yearly",
+    isTrial: false,
+    startDate: "2022-11-05",
+    expiryDate: "",
+    maxStorage: 1000,
+    apiLimits: 50000,
+    analyticsEnabled: true,
+  },
+  {
+    id: "c5",
+    name: "CloudPeak",
+    displayName: "CloudPeak Ltd",
+    logo: "CP",
+    plan: "Pro",
+    users: 67,
+    status: "Suspended",
+    revenue: 0,
+    joinedAt: "2023-02-18",
+    email: "info@cloudpeak.com",
+    phone: "+61 2 1234 5678",
+    country: "AU",
+    adminName: "Chloe Peak",
+    adminEmail: "chloe@cloudpeak.com",
+    billingCycle: "monthly",
+    isTrial: false,
+    startDate: "2023-02-18",
+    expiryDate: "2024-02-18",
+    maxStorage: 100,
+    apiLimits: 5000,
+    analyticsEnabled: false,
+  },
+  {
+    id: "c6",
+    name: "DataStream",
+    displayName: "DataStream GmbH",
+    logo: "DS",
+    plan: "Basic",
+    users: 18,
+    status: "Active",
+    revenue: 2400,
+    joinedAt: "2023-08-30",
+    email: "team@datastream.co",
+    phone: "+49 30 123456",
+    country: "DE",
+    adminName: "Dietrich Stein",
+    adminEmail: "dietrich@datastream.co",
+    billingCycle: "monthly",
+    isTrial: false,
+    startDate: "2023-08-30",
+    expiryDate: "",
+    maxStorage: 20,
+    apiLimits: 1000,
+    analyticsEnabled: false,
+  },
+  {
+    id: "c7",
+    name: "Orion Logistics",
+    displayName: "Orion Transport",
+    logo: "OL",
+    plan: "Free",
+    users: 5,
+    status: "Pending",
+    revenue: 0,
+    joinedAt: "2024-01-02",
+    email: "admin@orion.co",
+    phone: "+91 22 1234 5678",
+    country: "IN",
+    adminName: "Omar Khan",
+    adminEmail: "omar@orion.co",
+    billingCycle: "monthly",
+    isTrial: true,
+    startDate: "2024-01-02",
+    expiryDate: "2024-02-02",
+    maxStorage: 5,
+    apiLimits: 500,
+    analyticsEnabled: false,
+  },
+  {
+    id: "c8",
+    name: "Nexus Finance",
+    displayName: "Nexus Financial Group",
+    logo: "NF",
+    plan: "Enterprise",
+    users: 190,
+    status: "Active",
+    revenue: 54000,
+    joinedAt: "2022-09-14",
+    email: "sec@nexusfin.com",
+    phone: "+65 6123 4567",
+    country: "SG",
+    adminName: "Natalie Frost",
+    adminEmail: "natalie@nexusfin.com",
+    billingCycle: "yearly",
+    isTrial: false,
+    startDate: "2022-09-14",
+    expiryDate: "",
+    maxStorage: 500,
+    apiLimits: 10000,
+    analyticsEnabled: true,
+  },
+  {
+    id: "c9",
+    name: "BlueWave Media",
+    displayName: "BlueWave Studios",
+    logo: "BW",
+    plan: "Pro",
+    users: 53,
+    status: "Active",
+    revenue: 10200,
+    joinedAt: "2023-05-07",
+    email: "hello@bluewave.fm",
+    phone: "+1 (555) 777-8888",
+    country: "US",
+    adminName: "Ben Wallace",
+    adminEmail: "ben@bluewave.fm",
+    billingCycle: "monthly",
+    isTrial: false,
+    startDate: "2023-05-07",
+    expiryDate: "",
+    maxStorage: 100,
+    apiLimits: 5000,
+    analyticsEnabled: true,
+  },
+  {
+    id: "c10",
+    name: "Solaris Health",
+    displayName: "Solaris Healthcare",
+    logo: "SH",
+    plan: "Basic",
+    users: 30,
+    status: "Suspended",
+    revenue: 0,
+    joinedAt: "2023-07-19",
+    email: "contact@solarishealth.com",
+    phone: "+33 1 23 45 67 89",
+    country: "FR",
+    adminName: "Sophie Martin",
+    adminEmail: "sophie@solarishealth.com",
+    billingCycle: "yearly",
+    isTrial: false,
+    startDate: "2023-07-19",
+    expiryDate: "2024-07-19",
+    maxStorage: 20,
+    apiLimits: 1000,
+    analyticsEnabled: false,
+  },
+  {
+    id: "c11",
+    name: "PureLogic",
+    displayName: "PureLogic Software",
+    logo: "PL",
+    plan: "Pro",
+    users: 76,
+    status: "Active",
+    revenue: 14400,
+    joinedAt: "2023-09-11",
+    email: "ops@purelogic.dev",
+    phone: "+1 (555) 444-3333",
+    country: "US",
+    adminName: "Peter Parker",
+    adminEmail: "peter@purelogic.dev",
+    billingCycle: "monthly",
+    isTrial: false,
+    startDate: "2023-09-11",
+    expiryDate: "",
+    maxStorage: 100,
+    apiLimits: 5000,
+    analyticsEnabled: true,
+  },
+  {
+    id: "c12",
+    name: "Zenith Robotics",
+    displayName: "Zenith AI & Robotics",
+    logo: "ZR",
+    plan: "Enterprise",
+    users: 420,
+    status: "Active",
+    revenue: 96000,
+    joinedAt: "2022-04-03",
+    email: "admin@zenithrobotics.com",
+    phone: "+81 3 1234 5678",
+    country: "JP",
+    adminName: "Kenji Tanaka",
+    adminEmail: "kenji@zenithrobotics.com",
+    billingCycle: "yearly",
+    isTrial: false,
+    startDate: "2022-04-03",
+    expiryDate: "",
+    maxStorage: 2000,
+    apiLimits: 100000,
+    analyticsEnabled: true,
+  },
+];
+
+// ─── Subscriptions ────────────────────────────────────────────────────────────
+
+export const subscriptions: Subscription[] = [
+  {
+    id: "sub1",
+    companyId: "c1",
+    company: "Acme Corp",
+    planId: "plan-enterprise",
+    planName: "Enterprise",
+    price: 4000,
+    currency: "USD",
+    billingCycle: "yearly",
+    status: "active",
+    startDate: "2024-01-15",
+    endDate: "2025-01-15",
+    nextBillingDate: "2025-01-15",
+    isTrial: false,
+    paymentStatus: "paid",
+    autoRenew: true,
+  },
+  {
+    id: "sub2",
+    companyId: "c2",
+    company: "TechNova",
+    planId: "plan-pro",
+    planName: "Pro",
+    price: 1300,
+    currency: "USD",
+    billingCycle: "yearly",
+    status: "active",
+    startDate: "2024-03-22",
+    endDate: "2025-03-22",
+    nextBillingDate: "2025-03-22",
+    isTrial: false,
+    paymentStatus: "paid",
+    autoRenew: true,
+  },
+  {
+    id: "sub3",
+    companyId: "c3",
+    company: "Spark Systems",
+    planId: "plan-basic",
+    planName: "Basic",
+    price: 300,
+    currency: "USD",
+    billingCycle: "yearly",
+    status: "active",
+    startDate: "2024-06-10",
+    endDate: "2025-06-10",
+    nextBillingDate: "2025-06-10",
+    isTrial: false,
+    paymentStatus: "paid",
+    autoRenew: false,
+  },
+  {
+    id: "sub4",
+    companyId: "c4",
+    company: "Vertex AI Labs",
+    planId: "plan-enterprise",
+    planName: "Enterprise",
+    price: 6000,
+    currency: "USD",
+    billingCycle: "yearly",
+    status: "active",
+    startDate: "2023-11-05",
+    endDate: "2024-11-05",
+    nextBillingDate: "2024-11-05",
+    isTrial: false,
+    paymentStatus: "paid",
+    autoRenew: true,
+  },
+  {
+    id: "sub5",
+    companyId: "c5",
+    company: "CloudPeak",
+    planId: "plan-pro",
+    planName: "Pro",
+    price: 130,
+    currency: "USD",
+    billingCycle: "monthly",
+    status: "cancelled",
+    startDate: "2024-02-18",
+    endDate: "2024-08-18",
+    nextBillingDate: "",
+    isTrial: false,
+    paymentStatus: "paid",
+    autoRenew: false,
+  },
+  {
+    id: "sub6",
+    companyId: "c6",
+    company: "DataStream",
+    planId: "plan-basic",
+    planName: "Basic",
+    price: 30,
+    currency: "USD",
+    billingCycle: "monthly",
+    status: "active",
+    startDate: "2024-08-30",
+    endDate: "2025-08-30",
+    nextBillingDate: "2024-09-30",
+    isTrial: false,
+    paymentStatus: "paid",
+    autoRenew: true,
+  },
+  {
+    id: "sub7",
+    companyId: "c7",
+    company: "Orion Logistics",
+    planId: "plan-free",
+    planName: "Free",
+    price: 0,
+    currency: "USD",
+    billingCycle: "monthly",
+    status: "trial",
+    startDate: "2025-01-02",
+    endDate: "2025-02-02",
+    nextBillingDate: "2025-02-02",
+    isTrial: true,
+    trialStartDate: "2025-01-02",
+    trialEndDate: "2025-02-02",
+    paymentStatus: "paid",
+    autoRenew: true,
+  },
+  {
+    id: "sub8",
+    companyId: "c8",
+    company: "Nexus Finance",
+    planId: "plan-enterprise",
+    planName: "Enterprise",
+    price: 4500,
+    currency: "USD",
+    billingCycle: "yearly",
+    status: "active",
+    startDate: "2023-09-14",
+    endDate: "2024-09-14",
+    nextBillingDate: "2024-09-14",
+    isTrial: false,
+    paymentStatus: "paid",
+    autoRenew: true,
+  },
+  {
+    id: "sub9",
+    companyId: "c9",
+    company: "BlueWave Media",
+    planId: "plan-pro",
+    planName: "Pro",
+    price: 130,
+    currency: "USD",
+    billingCycle: "monthly",
+    status: "past_due",
+    startDate: "2024-05-07",
+    endDate: "2025-05-07",
+    nextBillingDate: "2024-06-07",
+    isTrial: false,
+    paymentStatus: "failed",
+    autoRenew: true,
+  },
+  {
+    id: "sub10",
+    companyId: "c10",
+    company: "Solaris Health",
+    planId: "plan-basic",
+    planName: "Basic",
+    price: 300,
+    currency: "USD",
+    billingCycle: "yearly",
+    status: "expired",
+    startDate: "2023-07-19",
+    endDate: "2024-07-19",
+    nextBillingDate: "",
+    isTrial: false,
+    paymentStatus: "paid",
+    autoRenew: false,
+  },
+  {
+    id: "sub11",
+    companyId: "c11",
+    company: "PureLogic",
+    planId: "plan-pro",
+    planName: "Pro",
+    price: 130,
+    currency: "USD",
+    billingCycle: "monthly",
+    status: "active",
+    startDate: "2024-09-11",
+    endDate: "2025-09-11",
+    nextBillingDate: "2024-10-11",
+    isTrial: false,
+    paymentStatus: "paid",
+    autoRenew: true,
+  },
+  {
+    id: "sub12",
+    companyId: "c12",
+    company: "Zenith Robotics",
+    planId: "plan-enterprise",
+    planName: "Enterprise",
+    price: 8000,
+    currency: "USD",
+    billingCycle: "yearly",
+    status: "active",
+    startDate: "2023-04-03",
+    endDate: "2025-04-03",
+    nextBillingDate: "2025-04-03",
+    isTrial: false,
+    paymentStatus: "paid",
+    autoRenew: true,
+  },
+];
+
+// ─── Orders ───────────────────────────────────────────────────────────────────
+
+export const orders: Order[] = [
+  {
+    id: "ORD-001",
+    companyId: "c1",
+    company: "Acme Corp",
+    plan: "Enterprise",
+    amount: 4000,
+    status: "Paid",
+    date: "2025-01-15",
+    invoice: "INV-2025-001",
+  },
+  {
+    id: "ORD-002",
+    companyId: "c2",
+    company: "TechNova",
+    plan: "Pro",
+    amount: 1300,
+    status: "Paid",
+    date: "2025-01-22",
+    invoice: "INV-2025-002",
+  },
+  {
+    id: "ORD-003",
+    companyId: "c3",
+    company: "Spark Systems",
+    plan: "Basic",
+    amount: 300,
+    status: "Paid",
+    date: "2025-02-10",
+    invoice: "INV-2025-003",
+  },
+  {
+    id: "ORD-004",
+    companyId: "c4",
+    company: "Vertex AI Labs",
+    plan: "Enterprise",
+    amount: 6000,
+    status: "Paid",
+    date: "2025-02-14",
+    invoice: "INV-2025-004",
+  },
+  {
+    id: "ORD-005",
+    companyId: "c5",
+    company: "CloudPeak",
+    plan: "Pro",
+    amount: 1300,
+    status: "Failed",
+    date: "2025-02-18",
+    invoice: "INV-2025-005",
+  },
+  {
+    id: "ORD-006",
+    companyId: "c6",
+    company: "DataStream",
+    plan: "Basic",
+    amount: 300,
+    status: "Paid",
+    date: "2025-03-01",
+    invoice: "INV-2025-006",
+  },
+  {
+    id: "ORD-007",
+    companyId: "c7",
+    company: "Orion Logistics",
+    plan: "Free",
+    amount: 0,
+    status: "Paid",
+    date: "2025-03-02",
+    invoice: "INV-2025-007",
+  },
+  {
+    id: "ORD-008",
+    companyId: "c8",
+    company: "Nexus Finance",
+    plan: "Enterprise",
+    amount: 4500,
+    status: "Pending",
+    date: "2025-03-14",
+    invoice: "INV-2025-008",
+  },
+  {
+    id: "ORD-009",
+    companyId: "c9",
+    company: "BlueWave Media",
+    plan: "Pro",
+    amount: 1300,
+    status: "Paid",
+    date: "2025-03-22",
+    invoice: "INV-2025-009",
+  },
+  {
+    id: "ORD-010",
+    companyId: "c10",
+    company: "Solaris Health",
+    plan: "Basic",
+    amount: 300,
+    status: "Failed",
+    date: "2025-04-01",
+    invoice: "INV-2025-010",
+  },
+  {
+    id: "ORD-011",
+    companyId: "c11",
+    company: "PureLogic",
+    plan: "Pro",
+    amount: 1300,
+    status: "Paid",
+    date: "2025-04-11",
+    invoice: "INV-2025-011",
+  },
+  {
+    id: "ORD-012",
+    companyId: "c12",
+    company: "Zenith Robotics",
+    plan: "Enterprise",
+    amount: 8000,
+    status: "Paid",
+    date: "2025-04-15",
+    invoice: "INV-2025-012",
+  },
+  {
+    id: "ORD-013",
+    companyId: "c1",
+    company: "Acme Corp",
+    plan: "Enterprise",
+    amount: 4000,
+    status: "Pending",
+    date: "2025-04-20",
+    invoice: "INV-2025-013",
+  },
+  {
+    id: "ORD-014",
+    companyId: "c4",
+    company: "Vertex AI Labs",
+    plan: "Enterprise",
+    amount: 6000,
+    status: "Paid",
+    date: "2025-04-21",
+    invoice: "INV-2025-014",
+  },
+  {
+    id: "ORD-015",
+    companyId: "c2",
+    company: "TechNova",
+    plan: "Pro",
+    amount: 1300,
+    status: "Paid",
+    date: "2025-04-22",
+    invoice: "INV-2025-015",
+  },
+];
+
+// ─── Plans ────────────────────────────────────────────────────────────────────
+
+export const plans: Plan[] = [
+  {
+    id: "plan-free",
+    name: "Free",
+    price: 0,
+    yearlyPrice: 0,
+    description: "Perfect for small teams getting started.",
+    features: [
+      "Up to 5 users",
+      "1 GB storage",
+      "Basic analytics",
+      "Email support",
+      "API access (limited)",
+    ],
+    limits: { users: 5, storage: "1 GB", support: "Email" },
+    popular: false,
+    companies: 14,
+  },
+  {
+    id: "plan-basic",
+    name: "Basic",
+    price: 300,
+    yearlyPrice: 2880,
+    description: "For growing teams that need more power.",
+    features: [
+      "Up to 30 users",
+      "20 GB storage",
+      "Advanced analytics",
+      "Priority email support",
+      "Full API access",
+      "Custom domain",
+    ],
+    limits: { users: 30, storage: "20 GB", support: "Priority Email" },
+    popular: false,
+    companies: 28,
+  },
+  {
+    id: "plan-pro",
+    name: "Pro",
+    price: 1300,
+    yearlyPrice: 12480,
+    description: "For professional teams needing enterprise features.",
+    features: [
+      "Up to 100 users",
+      "100 GB storage",
+      "Full analytics suite",
+      "Slack + Email support",
+      "Full API access",
+      "Custom domain",
+      "SSO / SAML",
+      "Advanced roles",
+    ],
+    limits: { users: 100, storage: "100 GB", support: "Slack + Email" },
+    popular: true,
+    companies: 42,
+  },
+  {
+    id: "plan-enterprise",
+    name: "Enterprise",
+    price: 4000,
+    yearlyPrice: 38400,
+    description: "Unlimited power for large organizations.",
+    features: [
+      "Unlimited users",
+      "Unlimited storage",
+      "Custom analytics",
+      "Dedicated support",
+      "Full API + webhooks",
+      "Custom domain + DNS",
+      "SSO / SAML / OIDC",
+      "Audit logs",
+      "SLA guarantee",
+      "Custom contracts",
+    ],
+    limits: { users: -1, storage: "Unlimited", support: "Dedicated SLA" },
+    popular: false,
+    companies: 16,
+  },
+];
+
+// ─── Revenue Chart Data ───────────────────────────────────────────────────────
+
+export const revenueData: RevenuePoint[] = [
+  { month: "Jan", mrr: 52000, arr: 624000, newCustomers: 8, churn: 2 },
+  { month: "Feb", mrr: 58000, arr: 696000, newCustomers: 11, churn: 1 },
+  { month: "Mar", mrr: 63000, arr: 756000, newCustomers: 9, churn: 3 },
+  { month: "Apr", mrr: 71000, arr: 852000, newCustomers: 14, churn: 2 },
+  { month: "May", mrr: 76000, arr: 912000, newCustomers: 12, churn: 4 },
+  { month: "Jun", mrr: 82000, arr: 984000, newCustomers: 18, churn: 2 },
+  { month: "Jul", mrr: 88000, arr: 1056000, newCustomers: 21, churn: 3 },
+  { month: "Aug", mrr: 94000, arr: 1128000, newCustomers: 16, churn: 5 },
+  { month: "Sep", mrr: 101000, arr: 1212000, newCustomers: 22, churn: 2 },
+  { month: "Oct", mrr: 109000, arr: 1308000, newCustomers: 25, churn: 4 },
+  { month: "Nov", mrr: 118000, arr: 1416000, newCustomers: 28, churn: 3 },
+  { month: "Dec", mrr: 128000, arr: 1536000, newCustomers: 30, churn: 2 },
+];
+
+export const planDistribution = [
+  { name: "Enterprise", value: 16, fill: "var(--color-chart-1)" },
+  { name: "Pro", value: 42, fill: "var(--color-chart-2)" },
+  { name: "Basic", value: 28, fill: "var(--color-chart-3)" },
+  { name: "Free", value: 14, fill: "var(--color-chart-4)" },
+];
+
+// ─── Dashboard Stats ──────────────────────────────────────────────────────────
+
+export const dashboardStats = {
+  totalRevenue: 128000,
+  revenueGrowth: 12.4,
+  activeCompanies: 100,
+  companiesGrowth: 8.2,
+  activeSubscriptions: 94,
+  subscriptionsGrowth: 6.5,
+  monthlyGrowth: 18.7,
+  growthChange: 3.1,
+};
