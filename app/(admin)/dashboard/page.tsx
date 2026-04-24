@@ -106,7 +106,7 @@ export default function DashboardPage() {
                 <XAxis dataKey="month" tick={{ fontSize: 11, fill: "currentColor" }} className="text-muted-foreground" axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 11, fill: "currentColor" }} className="text-muted-foreground" tickFormatter={(v) => `$${v / 1000}k`} axisLine={false} tickLine={false} />
                 <Tooltip
-                  formatter={(v: number) => [formatCurrency(v), "MRR"]}
+                  formatter={(v: any) => [formatCurrency(Number(v) || 0), "MRR"]}
                   contentStyle={{
                     background: "var(--color-card)",
                     border: "1px solid var(--color-border)",
