@@ -156,7 +156,7 @@ export default function RevenuePage() {
                 ))}
               </Pie>
               <Tooltip
-                formatter={(v: number, name: string) => [`${v} companies`, name]}
+                formatter={(v: any, name: any) => [`${v} companies`, name]}
                 contentStyle={{ background: "var(--color-card)", border: "1px solid var(--color-border)", borderRadius: "8px", fontSize: 12 }}
               />
               <Legend wrapperStyle={{ fontSize: 12 }} />
